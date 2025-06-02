@@ -11,6 +11,40 @@ define-command -hidden open_file_picker %{
   }
 }
 
+## kitty integration need set `allow_remote_control yes` ctrl+shift+{1, 2,,3} focous specif window to switch window
+define-command kitty-split -params 1 -docstring 'split the current window according to  the param (vsplit /hsplit)' %{
+  nop %sh{
+    kitty @ launch --no-response --location $1 kak -c $kak_session
+  }
+}
+
+
+## tmux integration
+define-command tmux-split -params 1 -docstring 'split (down / right)' %{
+  nop %sh{
+    tmux split-window $1 kak -c $kak_session
+  }
+}
+
+define-command tmux-select-pane -params 1 -docstring 'select pane' %{
+  nop %sh{
+    tmux select-pane $1
+  }
+}
+
+map global user w ':enter-user-mode window-tmux<ret>' -docstring 'window mode'
+
+declare-user-mode window-tmux
+map global window-tmux Q ':q!<ret>'                  -docstring 'close window (force)'
+map global window-tmux c ':tmux-select-pane -L<ret>' -docstring 'move left'
+map global window-tmux o ':tmux-split -v<ret>'       -docstring 'horizontal split'
+map global window-tmux q ':q<ret>'                   -docstring 'close window'
+map global window-tmux r ':tmux-select-pane -R<ret>' -docstring 'move right'
+map global window-tmux s ':tmux-select-pane -U<ret>' -docstring 'move up'
+map global window-tmux t ':tmux-select-pane -D<ret>' -docstring 'move down'
+map global window-tmux v ':tmux-split -h<ret>'       -docstring 'vertical split'
+
+
 # Tree-sitter
 eval %sh{ kak-tree-sitter -dks --init "$kak_session" --with-highlighting --with-text-objects -vvv }
 colorscheme catppuccin_macchiato
