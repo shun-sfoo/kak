@@ -11,6 +11,12 @@ define-command -hidden open_file_picker %{
   }
 }
 
+define-command  open_buffer_picker %{
+  prompt buffer: -menu -buffer-completion %{
+    buffer %val{text}
+  }
+}
+
 ## kitty integration need set `allow_remote_control yes` ctrl+shift+{1, 2,,3} focous specif window to switch window
 define-command kitty-split -params 1 -docstring 'split the current window according to  the param (vsplit /hsplit)' %{
   nop %sh{
@@ -36,13 +42,13 @@ map global user w ':enter-user-mode window-tmux<ret>' -docstring 'window mode'
 
 declare-user-mode window-tmux
 map global window-tmux Q ':q!<ret>'                  -docstring 'close window (force)'
-map global window-tmux c ':tmux-select-pane -L<ret>' -docstring 'move left'
-map global window-tmux o ':tmux-split -v<ret>'       -docstring 'horizontal split'
-map global window-tmux q ':q<ret>'                   -docstring 'close window'
-map global window-tmux r ':tmux-select-pane -R<ret>' -docstring 'move right'
-map global window-tmux s ':tmux-select-pane -U<ret>' -docstring 'move up'
-map global window-tmux t ':tmux-select-pane -D<ret>' -docstring 'move down'
+map global window-tmux h ':tmux-select-pane -L<ret>' -docstring 'move left'
+map global window-tmux l ':tmux-select-pane -R<ret>' -docstring 'move right'
+map global window-tmux j ':tmux-select-pane -U<ret>' -docstring 'move up'
+map global window-tmux k ':tmux-select-pane -D<ret>' -docstring 'move down'
+map global window-tmux p ':tmux-split -v<ret>'       -docstring 'horizontal split'
 map global window-tmux v ':tmux-split -h<ret>'       -docstring 'vertical split'
+map global window-tmux q ':q<ret>'                   -docstring 'close window'
 
 
 # Tree-sitter
@@ -107,3 +113,37 @@ map global user $ ':e -existing ~/.config/kak/kakrc<ret>' -docstring 'edit Kakou
 map global user c ':comment-line<ret>' -docstring 'comment line'
 
 map global user f ':open_file_picker<ret>'   -docstring 'pick file'
+
+## buffers
+declare-user-mode user-buffer
+map global user b ':enter-user-mode user-buffer<ret>' -docstring 'buffers'
+map global user-buffer b ':open_buffer_picker<ret>'   -docstring 'pick buffer'
+map global user-buffer d ':db<ret>'                   -docstring 'delete buffer'
+map global user-buffer D ':db!<ret>'                  -docstring 'force-delete buffer'
+map global user-buffer ( ':buffer-previous<ret>'      -docstring 'previous buffer'
+map global user-buffer ) ':buffer-next<ret>'          -docstring 'next buffer'
+
+## LSP
+declare-user-mode user-lsp
+map global user l ':enter-user-mode user-lsp<ret>'      -docstring 'lsp mode'
+map global user-lsp a ':lsp-code-actions<ret>'          -docstring 'code action'
+map global user-lsp c ':lsp-code-lens<ret>'             -docstring 'execute code lens'
+map global user-lsp d ':lsp-diagnostics<ret>'           -docstring 'list diagnostics'
+map global user-lsp h ':lsp-highlight-references<ret>'  -docstring 'highlight references'
+map global user-lsp I ':lsp-implementation<ret>'        -docstring 'list implementations'
+map global user-lsp i ':lsp-incoming-calls<ret>'        -docstring 'incoming calls'
+map global user-lsp K ':lsp-hover-buffer<ret>'          -docstring 'hover in a dedicated buffer'
+map global user-lsp k ':lsp-hover<ret>'                 -docstring 'hover'
+map global user-lsp l ':lsp-code-lens<ret>'             -docstring 'run a code lens'
+map global user-lsp ) ':lsp-next-function<ret>'         -docstring 'jump to the next function'
+map global user-lsp ( ':lsp-previous-function<ret>'     -docstring 'jump to the previous function'
+map global user-lsp o ':lsp-outgoing-calls<ret>'        -docstring 'outgoing calls'
+map global user-lsp p ':lsp-workspace-symbol-incr<ret>' -docstring 'pick workspace symbol'
+map global user-lsp P ':lsp-workspace-symbol<ret>'      -docstring 'list workspace symbols'
+map global user-lsp r ':lsp-references<ret>'            -docstring 'list references'
+map global user-lsp R ':lsp-rename-prompt<ret>'         -docstring 'rename'
+map global user-lsp S ':lsp-document-symbol<ret>'       -docstring 'list workspace symbols'
+map global user-lsp s ':lsp-goto-document-symbol<ret>'  -docstring 'pick document symbol'
+map global user-lsp x ':lsp-find-error<ret>'            -docstring 'jump to the prev/next error'
+map global insert <c-h> '<a-;>:lsp-signature-help<ret>'    -docstring 'show signature help'
+map global insert <tab> '<a-;>:try lsp-snippets-select-next-placeholders catch %{ execute-keys -with-hooks <lt>tab> }<ret>' -docstring 'Select next snippet placeholder'
