@@ -4,6 +4,13 @@ set global indentwidth 2
 
 add-highlighter global/number-lines number-lines -hlcursor
 
+define-command fuzzy %{
+  nop %sh{
+    tmux popup -E 'fzf > /tmp/drv'
+  }
+  edit -existing %sh{ cat /tmp/drv }
+}
+
 ## Some pickers
 define-command -hidden open_file_picker %{
   prompt file: -menu -shell-script-candidates 'fd --type=file' %{
@@ -16,6 +23,7 @@ define-command  open_buffer_picker %{
     buffer %val{text}
   }
 }
+
 
 ## kitty integration need set `allow_remote_control yes` ctrl+shift+{1, 2,,3} focous specif window to switch window
 define-command kitty-split -params 1 -docstring 'split the current window according to  the param (vsplit /hsplit)' %{
